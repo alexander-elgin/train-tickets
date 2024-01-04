@@ -7,7 +7,7 @@ from destinations.models import Destination
 class DestinationType(DjangoObjectType):
     class Meta:
         model = Destination
-        fields = ("id", "name")
+        fields = ("id", "active", "name")
 
 
 class Query(graphene.ObjectType):
