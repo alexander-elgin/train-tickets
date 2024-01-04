@@ -1,8 +1,8 @@
-from graphene import relay, ObjectType
+from graphene import relay, List, ObjectType, String
 from graphene_django import DjangoObjectType
-from graphene_django.filter import DjangoFilterConnectionField
 
 from destinations.models import Destination
+from utils.sorting import OrderedDjangoFilterConnectionField
 
 
 class DestinationNode(DjangoObjectType):
@@ -17,4 +17,4 @@ class DestinationNode(DjangoObjectType):
 
 class Query(ObjectType):
     destination = relay.Node.Field(DestinationNode)
-    destinations = DjangoFilterConnectionField(DestinationNode)
+    destinations = OrderedDjangoFilterConnectionField(DestinationNode, orderBy=List(of_type=String))
