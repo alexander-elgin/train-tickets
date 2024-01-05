@@ -2,6 +2,7 @@ from graphene import relay, Boolean, List, Mutation as GrapheneMutation, ObjectT
 from graphene_django import DjangoObjectType
 
 from destinations.models import Destination
+from utils.auth import check_authentication
 from utils.sorting import OrderedDjangoFilterConnectionField
 
 
@@ -16,8 +17,8 @@ class CreateDestination(GrapheneMutation):
         name = String(required=True)
 
     def mutate(self, info, id, name, active=True):
+        check_authentication(info)
         destination = Destination(id=id, name=name, active=active)
-
         destination.save()
 
         return CreateDestination(id=destination.id, name=destination.name, active=destination.active)
@@ -32,12 +33,12 @@ class DeleteDestination(GrapheneMutation):
         id = String(required=True)
 
     def mutate(self, info, id):
+        check_authentication(info)
         destination = Destination.objects.get(pk=id)
         destination.active = False
-
         destination.save()
 
-        return CreateDestination(id=destination.id, name=destination.name, active=destination.active)
+        return DeleteDestination(id=destination.id, name=destination.name, active=destination.active)
 
 
 class UpdateDestination(GrapheneMutation):
@@ -51,6 +52,7 @@ class UpdateDestination(GrapheneMutation):
         name = String()
 
     def mutate(self, info, id, name="", active=True):
+        check_authentication(info)
         destination = Destination.objects.get(pk=id)
 
         if active is not None:
@@ -60,7 +62,7 @@ class UpdateDestination(GrapheneMutation):
 
         destination.save()
 
-        return CreateDestination(id=destination.id, name=destination.name, active=destination.active)
+        return UpdateDestination(id=destination.id, name=destination.name, active=destination.active)
 
 
 class Mutation(ObjectType):
