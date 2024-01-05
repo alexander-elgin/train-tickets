@@ -76,7 +76,7 @@ class DestinationNode(DjangoObjectType):
             'name': ['exact', 'icontains', 'istartswith'],
             'active': ['exact'],
         }
-        interfaces = (relay.Node,)
+        use_connection = True
 
 
 class Query(ObjectType):
