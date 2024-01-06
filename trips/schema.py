@@ -1,4 +1,4 @@
-from graphene import relay, DateTime, ID, List, Mutation as GrapheneMutation, ObjectType, String
+from graphene import relay, DateTime, Int, List, Mutation as GrapheneMutation, ObjectType, String
 from graphene_django import DjangoObjectType
 from django.utils import timezone
 
@@ -13,12 +13,12 @@ def validate_date(date, min_date, date_type):
 
 
 class CreateTrip(GrapheneMutation):
-    destination_id = String(name="destination")
+    destination_id = Int(name="destination")
     departure_date_time = DateTime()
     arrival_date_time = DateTime()
 
     class Arguments:
-        destination_id = String(name="destination", required=True)
+        destination_id = Int(name="destination", required=True)
         departure_date_time = DateTime(required=True)
         arrival_date_time = DateTime(required=True)
 
@@ -42,14 +42,14 @@ class CreateTrip(GrapheneMutation):
 
 
 class UpdateTrip(GrapheneMutation):
-    id = ID()
-    destination_id = String(name="destination")
+    id = Int()
+    destination_id = Int(name="destination")
     departure_date_time = DateTime()
     arrival_date_time = DateTime()
 
     class Arguments:
-        id = ID(required=True)
-        destination_id = String(name="destination")
+        id = Int(required=True)
+        destination_id = Int(name="destination")
         departure_date_time = DateTime()
         arrival_date_time = DateTime()
 
