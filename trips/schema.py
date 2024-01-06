@@ -1,4 +1,4 @@
-from graphene import relay, DateTime, List, Mutation as GrapheneMutation, ObjectType, String
+from graphene import relay, DateTime, ID, List, Mutation as GrapheneMutation, ObjectType, String
 from graphene_django import DjangoObjectType
 from django.utils import timezone
 
@@ -13,24 +13,21 @@ def validate_date(date, min_date, date_type):
 
 
 class CreateTrip(GrapheneMutation):
-    id = String()
     destination_id = String(name="destination")
     departure_date_time = DateTime()
     arrival_date_time = DateTime()
 
     class Arguments:
-        id = String(required=True)
         destination_id = String(name="destination", required=True)
         departure_date_time = DateTime(required=True)
         arrival_date_time = DateTime(required=True)
 
-    def mutate(self, info, id, destination_id, departure_date_time, arrival_date_time):
+    def mutate(self, info, destination_id, departure_date_time, arrival_date_time):
         check_authentication(info)
         validate_date(departure_date_time, timezone.now(), "departure")
         validate_date(arrival_date_time, departure_date_time, "arrival")
 
         trip = Trip(
-            id=id,
             destination_id=destination_id,
             departure_date_time=departure_date_time,
             arrival_date_time=arrival_date_time
@@ -38,7 +35,6 @@ class CreateTrip(GrapheneMutation):
         trip.save()
 
         return CreateTrip(
-            id=trip.id,
             destination_id=trip.destination.id,
             departure_date_time=trip.departure_date_time,
             arrival_date_time=trip.arrival_date_time
@@ -46,13 +42,13 @@ class CreateTrip(GrapheneMutation):
 
 
 class UpdateTrip(GrapheneMutation):
-    id = String()
+    id = ID()
     destination_id = String(name="destination")
     departure_date_time = DateTime()
     arrival_date_time = DateTime()
 
     class Arguments:
-        id = String(required=True)
+        id = ID(required=True)
         destination_id = String(name="destination")
         departure_date_time = DateTime()
         arrival_date_time = DateTime()
