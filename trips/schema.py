@@ -13,6 +13,7 @@ def validate_date(date, min_date, date_type):
 
 
 class CreateTrip(GrapheneMutation):
+    id = Int()
     destination_id = Int(name="destination")
     departure_date_time = DateTime()
     arrival_date_time = DateTime()
@@ -35,6 +36,7 @@ class CreateTrip(GrapheneMutation):
         trip.save()
 
         return CreateTrip(
+            id=trip.id,
             destination_id=trip.destination.id,
             departure_date_time=trip.departure_date_time,
             arrival_date_time=trip.arrival_date_time
