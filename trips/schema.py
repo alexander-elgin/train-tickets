@@ -2,81 +2,59 @@ from graphene import relay, DateTime, Field, Int, List, Mutation as GrapheneMuta
 from graphene_django import DjangoObjectType
 from django.utils import timezone
 
-from destinations.schema import DestinationNode
+from routes.schema import RouteNode
 from trips.models import Trip
 from utils.auth import check_authentication
 from utils.sorting import OrderedDjangoFilterConnectionField
 
 
-def validate_date(date, min_date, date_type):
-    if date < min_date:
-        raise Exception(f"The {date_type} date is invalid")
+def validate_date(date):
+    if date < timezone.now():
+        raise Exception("The date time is invalid")
 
 
 class CreateTrip(GrapheneMutation):
     id = Int()
-    destination = Field(DestinationNode)
-    departure_date_time = DateTime()
-    arrival_date_time = DateTime()
+    route = Field(RouteNode)
+    date_time = DateTime()
 
     class Arguments:
-        destination_id = Int(name="destination", required=True)
-        departure_date_time = DateTime(required=True)
-        arrival_date_time = DateTime(required=True)
+        route_id = Int(name="route", required=True)
+        date_time = DateTime(required=True)
 
-    def mutate(self, info, destination_id, departure_date_time, arrival_date_time):
+    def mutate(self, info, route_id, date_time):
         check_authentication(info)
-        validate_date(departure_date_time, timezone.now(), "departure")
-        validate_date(arrival_date_time, departure_date_time, "arrival")
+        validate_date(date_time)
 
-        trip = Trip(
-            destination_id=destination_id,
-            departure_date_time=departure_date_time,
-            arrival_date_time=arrival_date_time
-        )
+        trip = Trip(route_id=route_id, date_time=date_time)
         trip.save()
 
-        return CreateTrip(
-            id=trip.id,
-            destination=trip.destination,
-            departure_date_time=trip.departure_date_time,
-            arrival_date_time=trip.arrival_date_time
-        )
+        return CreateTrip(id=trip.id, route=trip.route, date_time=trip.date_time)
 
 
 class UpdateTrip(GrapheneMutation):
     id = Int()
-    destination = Field(DestinationNode)
-    departure_date_time = DateTime()
-    arrival_date_time = DateTime()
+    route = Field(RouteNode)
+    date_time = DateTime()
 
     class Arguments:
         id = Int(required=True)
-        destination_id = Int(name="destination")
-        departure_date_time = DateTime()
-        arrival_date_time = DateTime()
+        route_id = Int(name="route")
+        date_time = DateTime()
 
-    def mutate(self, info, id, destination_id=None, departure_date_time=None, arrival_date_time=None):
+    def mutate(self, info, id, route_id=None, date_time=None):
         check_authentication(info)
         trip = Trip.objects.get(pk=id)
 
-        if destination_id is not None:
-            trip.destination_id = destination_id
-        if departure_date_time is not None:
-            validate_date(departure_date_time, timezone.now(), "departure")
-            trip.departure_date_time = departure_date_time
-        if arrival_date_time is not None:
-            validate_date(arrival_date_time, trip.departure_date_time, "arrival")
-            trip.arrival_date_time = arrival_date_time
+        if route_id is not None:
+            trip.route_id = route_id
+        if date_time is not None:
+            validate_date(date_time)
+            trip.date_time = date_time
 
         trip.save()
 
-        return UpdateTrip(
-            id=trip.id,
-            destination=trip.destination,
-            departure_date_time=trip.departure_date_time,
-            arrival_date_time=trip.arrival_date_time
-        )
+        return UpdateTrip(id=trip.id, route=trip.route, date_time=trip.date_time)
 
 
 class Mutation(ObjectType):
@@ -88,9 +66,8 @@ class TripNode(DjangoObjectType):
     class Meta:
         model = Trip
         filter_fields = {
-            'arrival_date_time': ['date', 'gt', 'gte', 'lt', 'lte', 'range'],
-            'departure_date_time': ['date', 'gt', 'gte', 'lt', 'lte', 'range'],
-            'destination': ['exact'],
+            'date_time': ['date', 'gt', 'gte', 'lt', 'lte', 'range'],
+            'route': ['exact'],
         }
         use_connection = True
 
