@@ -6,4 +6,4 @@ class Train(models.Model):
     active = models.BooleanField(default=True, db_index=True)
 
     def __str__(self):
-        return self.id
+        return str(self.id)
