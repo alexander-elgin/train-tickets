@@ -1,12 +1,14 @@
 import graphene
 import graphql_jwt
 
+import carriages.schema
 import destinations.schema
 import trains.schema
 import trips.schema
 
 
 class Mutation(
+    carriages.schema.Mutation,
     destinations.schema.Mutation,
     trains.schema.Mutation,
     trips.schema.Mutation,
@@ -18,6 +20,7 @@ class Mutation(
 
 
 class Query(
+    carriages.schema.Query,
     destinations.schema.Query,
     trains.schema.Query,
     trips.schema.Query,
