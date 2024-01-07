@@ -1,7 +1,8 @@
-from graphene import relay, DateTime, Int, List, Mutation as GrapheneMutation, ObjectType, String
+from graphene import relay, DateTime, Field, Int, List, Mutation as GrapheneMutation, ObjectType, String
 from graphene_django import DjangoObjectType
 from django.utils import timezone
 
+from destinations.schema import DestinationNode
 from trips.models import Trip
 from utils.auth import check_authentication
 from utils.sorting import OrderedDjangoFilterConnectionField
@@ -14,7 +15,7 @@ def validate_date(date, min_date, date_type):
 
 class CreateTrip(GrapheneMutation):
     id = Int()
-    destination_id = Int(name="destination")
+    destination = Field(DestinationNode)
     departure_date_time = DateTime()
     arrival_date_time = DateTime()
 
@@ -37,7 +38,7 @@ class CreateTrip(GrapheneMutation):
 
         return CreateTrip(
             id=trip.id,
-            destination_id=trip.destination.id,
+            destination=trip.destination,
             departure_date_time=trip.departure_date_time,
             arrival_date_time=trip.arrival_date_time
         )
@@ -45,7 +46,7 @@ class CreateTrip(GrapheneMutation):
 
 class UpdateTrip(GrapheneMutation):
     id = Int()
-    destination_id = Int(name="destination")
+    destination = Field(DestinationNode)
     departure_date_time = DateTime()
     arrival_date_time = DateTime()
 
@@ -72,7 +73,7 @@ class UpdateTrip(GrapheneMutation):
 
         return UpdateTrip(
             id=trip.id,
-            destination_id=trip.destination.id,
+            destination=trip.destination,
             departure_date_time=trip.departure_date_time,
             arrival_date_time=trip.arrival_date_time
         )
