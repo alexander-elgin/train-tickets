@@ -8,14 +8,13 @@ from utils.sorting import OrderedDjangoFilterConnectionField
 
 class CreateTrain(GrapheneMutation):
     id = Int()
-    active = Boolean()
 
     def mutate(self, info):
         check_authentication(info)
         train = Train(active=True)
         train.save()
 
-        return CreateTrain(id=train.id, active=train.active)
+        return CreateTrain(id=train.id)
 
 
 class DeleteTrain(GrapheneMutation):
