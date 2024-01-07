@@ -41,6 +41,7 @@ INSTALLED_APPS = [
     'carriages',
     'destinations',
     'routes',
+    'seats',
     'trains',
     'trips',
 ]
