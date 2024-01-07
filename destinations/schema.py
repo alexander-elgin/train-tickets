@@ -7,25 +7,23 @@ from utils.sorting import OrderedDjangoFilterConnectionField
 
 
 class CreateDestination(GrapheneMutation):
-    active = Boolean()
+    id = Int()
     name = String()
 
     class Arguments:
-        active = Boolean()
         name = String(required=True)
 
-    def mutate(self, info, name, active=True):
+    def mutate(self, info, name):
         check_authentication(info)
-        destination = Destination(name=name, active=active)
+        destination = Destination(name=name, active=True)
         destination.save()
 
-        return CreateDestination(name=destination.name, active=destination.active)
+        return CreateDestination(id=destination.id, name=destination.name)
 
 
 class DeleteDestination(GrapheneMutation):
     id = Int()
     active = Boolean()
-    name = String()
 
     class Arguments:
         id = Int(required=True)
@@ -36,31 +34,25 @@ class DeleteDestination(GrapheneMutation):
         destination.active = False
         destination.save()
 
-        return DeleteDestination(id=destination.id, name=destination.name, active=destination.active)
+        return DeleteDestination(id=destination.id, active=destination.active)
 
 
 class UpdateDestination(GrapheneMutation):
     id = Int()
-    active = Boolean()
     name = String()
 
     class Arguments:
         id = Int(required=True)
-        active = Boolean()
-        name = String()
+        name = String(required=True)
 
-    def mutate(self, info, id, name="", active=True):
+    def mutate(self, info, id, name):
         check_authentication(info)
         destination = Destination.objects.get(pk=id)
-
-        if active is not None:
-            destination.active = active
-        if name != "":
-            destination.name = name
+        destination.name = name
 
         destination.save()
 
-        return UpdateDestination(id=destination.id, name=destination.name, active=destination.active)
+        return UpdateDestination(id=destination.id, name=destination.name)
 
 
 class Mutation(ObjectType):
