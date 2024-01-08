@@ -2,7 +2,9 @@ from graphene import relay, Boolean, Field, Int, List, Mutation as GrapheneMutat
 from graphene_django import DjangoObjectType
 
 from carriages.models import Carriage
+from trains.models import Train
 from trains.schema import TrainNode
+from utils.active import check_active
 from utils.auth import check_authentication
 from utils.sorting import OrderedDjangoFilterConnectionField
 
@@ -18,6 +20,7 @@ class CreateCarriage(GrapheneMutation):
 
     def mutate(self, info, train_id, sleeping):
         check_authentication(info)
+        check_active(train_id, Train, 'train')
 
         carriage = Carriage(train_id=train_id, sleeping=sleeping)
         carriage.save()
@@ -56,6 +59,7 @@ class UpdateCarriage(GrapheneMutation):
         carriage = Carriage.objects.get(pk=id)
 
         if train_id is not None:
+            check_active(train_id, Train, 'train')
             carriage.train_id = train_id
         if sleeping is not None:
             carriage.sleeping = sleeping
