@@ -41,6 +41,7 @@ INSTALLED_APPS = [
     'carriages',
     'destinations',
     'payment_gateways',
+    'payments',
     'routes',
     'seats',
     'tickets',
