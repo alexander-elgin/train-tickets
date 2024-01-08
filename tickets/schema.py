@@ -44,24 +44,17 @@ class UpdateTicket(GrapheneMutation):
 
     class Arguments:
         id = Int(required=True)
-        seat_id = Int(name="seat")
-        trip_id = Int(name="trip")
-        price = Float()
-        taken = Boolean()
+        price = Float(required=True)
 
-    def mutate(self, info, id, seat_id=None, trip_id=None, price=None, taken=None):
+    def mutate(self, info, id, price):
         check_authentication(info)
         ticket = Ticket.objects.get(pk=id)
 
-        if seat_id is not None:
-            ticket.seat_id = seat_id
-        if trip_id is not None:
-            ticket.trip_id = trip_id
-        if taken is not None:
-            ticket.taken = taken
-        if price is not None:
-            validate_price(price)
-            ticket.price = price
+        if ticket.taken:
+            raise Exception("The ticket is taken already")
+
+        validate_price(price)
+        ticket.price = price
 
         ticket.save()
 
