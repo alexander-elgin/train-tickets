@@ -2,10 +2,12 @@ from graphene import relay, DateTime, Field, Int, List, Mutation as GrapheneMuta
 from django.db import transaction
 from graphene_django import DjangoObjectType
 
+from payment_gateways.models import PaymentGateway
 from payment_gateways.schema import PaymentGatewayNode
 from payments.models import Payment
 from tickets.models import Ticket
 from tickets.schema import TicketNode
+from utils.active import check_active
 from utils.auth import check_authentication
 from utils.sorting import OrderedDjangoFilterConnectionField
 
@@ -22,6 +24,7 @@ class BuyTicket(GrapheneMutation):
 
     def mutate(self, info, gateway_id, ticket_id):
         check_authentication(info)
+        check_active(gateway_id, PaymentGateway, 'payment gateway')
 
         try:
             with transaction.atomic():
