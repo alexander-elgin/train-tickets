@@ -40,6 +40,7 @@ INSTALLED_APPS = [
     "graphene_django",
     'carriages',
     'destinations',
+    'payment_gateways',
     'routes',
     'seats',
     'tickets',
