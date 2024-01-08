@@ -1,4 +1,5 @@
 from graphene import relay, DateTime, Field, Int, List, Mutation as GrapheneMutation, ObjectType, String
+from django.db import transaction
 from graphene_django import DjangoObjectType
 
 from payment_gateways.schema import PaymentGatewayNode
@@ -22,12 +23,16 @@ class BuyTicket(GrapheneMutation):
     def mutate(self, info, gateway_id, ticket_id):
         check_authentication(info)
 
-        ticket = Ticket.objects.get(pk=ticket_id)
-        ticket.taken = True
-        ticket.save()
+        try:
+            with transaction.atomic():
+                ticket = Ticket.objects.get(pk=ticket_id)
+                ticket.taken = True
+                ticket.save()
 
-        payment = Payment(gateway_id=gateway_id, ticket_id=ticket_id)
-        payment.save()
+                payment = Payment(gateway_id=gateway_id, ticket_id=ticket_id)
+                payment.save()
+        except:
+            raise Exception('Unable to buy the ticket')
 
         return BuyTicket(
             id=payment.id,

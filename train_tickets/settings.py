@@ -86,6 +86,7 @@ WSGI_APPLICATION = 'train_tickets.wsgi.application'
 
 DATABASES = {
     'default': {
+        "ATOMIC_MUTATIONS": True,
         'ENGINE': 'django.db.backends.sqlite3',
         'NAME': BASE_DIR / 'db.sqlite3',
     }
@@ -111,6 +112,7 @@ AUTH_PASSWORD_VALIDATORS = [
 ]
 
 GRAPHENE = {
+    "ATOMIC_MUTATIONS": True,
     'SCHEMA': 'train_tickets.schema.schema',
     'MIDDLEWARE': [
         'graphql_jwt.middleware.JSONWebTokenMiddleware',
