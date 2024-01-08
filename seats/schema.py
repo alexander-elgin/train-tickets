@@ -1,8 +1,10 @@
 from graphene import relay, Boolean, Field, Int, List, Mutation as GrapheneMutation, ObjectType, String
 from graphene_django import DjangoObjectType
 
+from carriages.models import Carriage
 from carriages.schema import CarriageNode
 from seats.models import Seat
+from utils.active import check_active
 from utils.auth import check_authentication
 from utils.sorting import OrderedDjangoFilterConnectionField
 
@@ -25,6 +27,7 @@ class CreateSeat(GrapheneMutation):
 
     def mutate(self, info, carriage_id, number, business=False):
         check_authentication(info)
+        check_active(carriage_id, Carriage, 'carriage')
         validate_number(number)
 
         seat = Seat(carriage_id=carriage_id, number=number, business=business)
@@ -52,6 +55,7 @@ class UpdateSeat(GrapheneMutation):
         if business is not None:
             seat.business = business
         if carriage_id is not None:
+            check_active(carriage_id, Carriage, 'carriage')
             seat.carriage_id = carriage_id
         if number is not None:
             validate_number(number)
