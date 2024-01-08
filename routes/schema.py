@@ -1,8 +1,10 @@
 from graphene import relay, Boolean, Field, Int, List, Mutation as GrapheneMutation, ObjectType, String
 from graphene_django import DjangoObjectType
 
+from destinations.models import Destination
 from destinations.schema import DestinationNode
 from routes.models import Route
+from utils.active import check_active
 from utils.auth import check_authentication
 from utils.sorting import OrderedDjangoFilterConnectionField
 
@@ -18,6 +20,7 @@ class CreateRoute(GrapheneMutation):
 
     def mutate(self, info, destination_id, duration):
         check_authentication(info)
+        check_active(destination_id, Destination, 'destination')
 
         route = Route(destination_id=destination_id, duration=duration)
         route.save()
@@ -56,6 +59,7 @@ class UpdateRoute(GrapheneMutation):
         route = Route.objects.get(pk=id)
 
         if destination_id is not None:
+            check_active(destination_id, Destination, 'destination')
             route.destination_id = destination_id
         if duration is not None:
             route.duration = duration
