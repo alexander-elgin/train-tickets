@@ -2,8 +2,10 @@ from graphene import relay, DateTime, Field, Int, List, Mutation as GrapheneMuta
 from graphene_django import DjangoObjectType
 from django.utils import timezone
 
+from routes.models import Route
 from routes.schema import RouteNode
 from trips.models import Trip
+from utils.active import check_active
 from utils.auth import check_authentication
 from utils.sorting import OrderedDjangoFilterConnectionField
 
@@ -24,6 +26,7 @@ class CreateTrip(GrapheneMutation):
 
     def mutate(self, info, route_id, date_time):
         check_authentication(info)
+        check_active(route_id, Route, 'route')
         validate_date(date_time)
 
         trip = Trip(route_id=route_id, date_time=date_time)
@@ -47,6 +50,7 @@ class UpdateTrip(GrapheneMutation):
         trip = Trip.objects.get(pk=id)
 
         if route_id is not None:
+            check_active(route_id, Route, 'route')
             trip.route_id = route_id
         if date_time is not None:
             validate_date(date_time)
