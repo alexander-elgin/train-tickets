@@ -1,7 +1,8 @@
-from rest_framework import routers
+from django.urls import path
 
-from destinations.views import ListDestinations
+from destinations.views import list_destinations
 
 
-router = routers.DefaultRouter()
-router.register('', ListDestinations)
+urlpatterns = [
+    path('', list_destinations)
+]

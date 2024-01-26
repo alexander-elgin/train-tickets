@@ -1,10 +1,11 @@
-from rest_framework import viewsets
+from rest_framework.decorators import api_view
+from rest_framework.response import Response
 
 from destinations.models import Destination
 from destinations.serializers import DestinationSerializer
 
 
-# ViewSets define the view behavior.
-class ListDestinations(viewsets.ModelViewSet):
-    queryset = Destination.objects.all()
-    serializer_class = DestinationSerializer
+@api_view(['GET'])
+def list_destinations(request):
+    serializer = DestinationSerializer(Destination.objects.all(), many=True)
+    return Response(serializer.data)
