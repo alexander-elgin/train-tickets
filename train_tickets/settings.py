@@ -42,6 +42,7 @@ INSTALLED_APPS = [
     'destinations',
     'payment_gateways',
     'payments',
+    'rest_framework',
     'routes',
     'seats',
     'tickets',
