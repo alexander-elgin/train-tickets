@@ -1,3 +1,10 @@
-from django.shortcuts import render
+from rest_framework import viewsets
 
-# Create your views here.
+from destinations.models import Destination
+from destinations.serializers import DestinationSerializer
+
+
+# ViewSets define the view behavior.
+class ListDestinations(viewsets.ModelViewSet):
+    queryset = Destination.objects.all()
+    serializer_class = DestinationSerializer
