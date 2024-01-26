@@ -1,3 +1,5 @@
+from django.utils.decorators import method_decorator
+from django.views.decorators.cache import cache_page
 from rest_framework import status
 from rest_framework.response import Response
 from rest_framework.generics import ListAPIView
@@ -17,6 +19,10 @@ class DestinationView(ListAPIView):
     queryset = Destination.objects.all().order_by('name')
     serializer_class = DestinationSerializer
     pagination_class = StandardResultsSetPagination
+
+    @method_decorator(cache_page(60 * 60 * 2))
+    def get(self, *args, **kwargs):
+        return super().get(*args, **kwargs)
 
     def post(self, request):
         serializer = DestinationSerializer(data=request.data)
