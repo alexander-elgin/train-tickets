@@ -1,8 +1,8 @@
 from django.urls import path
 
-from destinations.views import list_destinations
+from destinations.views import DestinationView
 
 
 urlpatterns = [
-    path('', list_destinations)
+    path('', DestinationView.as_view())
 ]
