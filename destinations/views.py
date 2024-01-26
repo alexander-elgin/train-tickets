@@ -4,6 +4,7 @@ from rest_framework import status
 from rest_framework.response import Response
 from rest_framework.generics import ListAPIView
 from rest_framework.pagination import PageNumberPagination
+from rest_framework.throttling import AnonRateThrottle, UserRateThrottle
 
 from destinations.models import Destination
 from destinations.serializers import DestinationSerializer
@@ -19,6 +20,7 @@ class DestinationView(ListAPIView):
     queryset = Destination.objects.all().order_by('name')
     serializer_class = DestinationSerializer
     pagination_class = StandardResultsSetPagination
+    throttle_classes = [AnonRateThrottle, UserRateThrottle]
 
     @method_decorator(cache_page(60 * 60 * 2))
     def get(self, *args, **kwargs):
